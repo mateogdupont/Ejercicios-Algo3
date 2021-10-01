@@ -11,19 +11,33 @@ DenotativeObject subclass: #CarolinaCuranderaDeRiverwood
 CarolinaCuranderaDeRiverwood class
 	instanceVariableNames: 'frasesDesconocidos frasesPrometedores cantidadDeInteraccionesConPersonajes'!
 
-!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'MGD 9/29/2021 16:28:40'!
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'MGD 10/1/2021 09:48:00'!
 interactuarCon: aPerson
+	|respuestaSegunCalificacion|
 	self recordarInteraccionCon: aPerson.
-	^ self responderSegunCalificacionDe: aPerson ! !
+	respuestaSegunCalificacion := self respuestaSegunCalificacionDe: aPerson.
+	self segunSiCumpleParaSerPrometedorReconocerloComoTal: aPerson.
+	^respuestaSegunCalificacion. 
+	! !
 
-!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'MGD 9/29/2021 15:50:10'!
-olvidar
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'MGD 10/1/2021 09:04:58'!
+olvidarInteraccionesCon: aPerson
+	cantidadDeInteraccionesConPersonajes at: aPerson put: 0.! !
+
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'MGD 10/1/2021 09:17:50'!
+olvidarTodasLasInteracciones
 	cantidadDeInteraccionesConPersonajes := Dictionary new.! !
 
 
-!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 15:50:10'!
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:00:52'!
+influenciarARiverwoodParaSerCalificadoComoPrometedor: aPerson
+	PuebloRiverwood verComoPrometedor: aPerson. 
+	PuebloRiverwood PuebloTodosOlvidanInteraccionesCon: aPerson.
+	! !
+
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:07:50'!
 obtenerInteraccionesCon: aPerson
-	^ cantidadDeInteraccionesConPersonajes at: aPerson ifAbsent: [0]
+	^ cantidadDeInteraccionesConPersonajes at: aPerson ifAbsent: [0].
 	! !
 
 !CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 15:50:10'!
@@ -33,20 +47,35 @@ recordarInteraccionCon: aPerson
 	cantidadDeInteraccionesConPersonajes at: aPerson put: (cantidadAnteriorDeIteracciones + 1).
 	! !
 
-!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 15:50:10'!
-responderSegunCalificacionDe: aPerson
-	^(Riverwood esPrometedor: aPerson) ifTrue: [self responderSegunCantidadDeInteraccionesConPrometedor: aPerson] ifFalse: [self responderSegunCantidadDeInteraccionesConDesconocido: aPerson].! !
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:10:56'!
+respuestaSegunCalificacionDe: aPerson
+	^(PuebloRiverwood esPrometedor: aPerson) ifTrue: [self respuestaSegunCantidadDeInteraccionesConPrometedor: aPerson] ifFalse: [self respuestaSegunCantidadDeInteraccionesConDesconocido: aPerson].! !
 
-!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 15:50:10'!
-responderSegunCantidadDeInteraccionesConDesconocido: aPerson
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:08:51'!
+respuestaSegunCantidadDeInteraccionesConDesconocido: aPerson
 	^ frasesDesconocidos at: ((self obtenerInteraccionesCon: aPerson ) min: frasesDesconocidos size).! !
 
-!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 15:50:10'!
-responderSegunCantidadDeInteraccionesConPrometedor: aPerson
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:09:09'!
+respuestaSegunCantidadDeInteraccionesConPrometedor: aPerson
 	^ frasesPrometedores at: ((self obtenerInteraccionesCon: aPerson ) min: frasesPrometedores size).! !
 
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:00:52'!
+segunSiCumpleParaSerPrometedorReconocerloComoTal: aPerson
+	(self verificarSiCumpleCondicionesParaSerPrometedor: aPerson) ifTrue: [self influenciarARiverwoodParaSerCalificadoComoPrometedor: aPerson] ifFalse: [].
+	! !
 
-!CarolinaCuranderaDeRiverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 9/29/2021 17:41:06'!
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:11:40'!
+terminoElRepertorioDeFrases: aPerson
+	^ ((self obtenerInteraccionesCon: aPerson) = 3).
+	! !
+
+!CarolinaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 09:44:59'!
+verificarSiCumpleCondicionesParaSerPrometedor: aPerson
+	^(PuebloRiverwood esDesconocido: aPerson ) & (self terminoElRepertorioDeFrases: aPerson).
+	! !
+
+
+!CarolinaCuranderaDeRiverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 10/1/2021 10:33:42'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -192,21 +221,21 @@ treborElGuardia
 	^ TreborElGuardiaDeSkyrim.! !
 
 
-!PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'JMB 9/22/2021 00:09:33'!
+!PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'MGD 10/1/2021 09:07:07'!
 esVistoPorElPuebloComoPrometedor: unPersonaje
-	Assert isTrue: false description: 'Reemplazar esto por la implementación correspondiente'.! !
+	^(PuebloRiverwood esPrometedor: unPersonaje).! !
 
-!PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'MGD 9/29/2021 16:02:57'!
+!PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'MGD 10/1/2021 09:17:50'!
 hacerQueLaCuranderaOlvideSusInteracciones
-	CarolinaCuranderaDeRiverwood olvidar.! !
+	CarolinaCuranderaDeRiverwood olvidarTodasLasInteracciones.! !
 
-!PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'MGD 9/29/2021 16:03:26'!
+!PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'MGD 10/1/2021 09:58:37'!
 hacerQueRiverwoodOlvideTodasSusCalificaciones
-	Riverwood olvideTodasCalificaciones.! !
+	PuebloRiverwood olvidarTodasCalificaciones.! !
 
-!PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'MGD 9/29/2021 16:09:11'!
+!PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'MGD 10/1/2021 08:41:06'!
 hacerQueRiverwoodVeaPrometedorAHamilton
-	Riverwood verComoPrometedor: self hamilton.! !
+	PuebloRiverwood verComoPrometedor: self hamilton.! !
 
 !PruebasInteracionesConCarolinaLaCurandera class methodsFor: 'opiniones e interacciones' stamp: 'JMB 9/25/2021 12:48:36'!
 olvidarInteraccionesYOpiniones
@@ -248,12 +277,12 @@ test02CuandoElGuardiaInteractuaPorSegundaVezConUnPersonajeLeRespondeConSuSegunda
 	
 	Assert that: mensaje isEqualTo: '¿Todo bien?'.! !
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'interacciones con un personaje' stamp: 'JMB 9/25/2021 13:04:25'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'interacciones con un personaje' stamp: 'MGD 10/1/2021 09:17:50'!
 test03CuandoElGuardiaOlvidaInteraccionesPreviasConUnPersonajeAlVolverAInteractuarLeRespondeConSuPrimerFrase
 	| mensaje |
 	self olvidarInteraccionesYOpiniones.
 	self treborElGuardia interactuarCon: self hamilton.
-	self treborElGuardia olvidar.
+	self treborElGuardia olvidarTodasLasInteracciones.
 	
 	mensaje := self treborElGuardia interactuarCon: self hamilton.
 	
@@ -342,17 +371,17 @@ treborElGuardia
 	^ TreborElGuardiaDeSkyrim ! !
 
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'JMB 9/21/2021 20:49:11'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'MGD 10/1/2021 09:17:50'!
 hacerQueElGuardiaOlvideSusInteracciones
-	TreborElGuardiaDeSkyrim olvidar.! !
+	TreborElGuardiaDeSkyrim olvidarTodasLasInteracciones.! !
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'MGD 9/29/2021 15:36:14'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'MGD 10/1/2021 10:14:53'!
 hacerQueRiverwoodOlvideTodasSusCalificaciones
-	Riverwood olvideTodasCalificaciones.! !
+	PuebloRiverwood olvidarTodasCalificaciones .! !
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'MGD 9/29/2021 15:46:32'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'MGD 10/1/2021 08:41:06'!
 hacerQueRiverwoodVeaPrometedorAHamilton
-	Riverwood verComoPrometedor: self hamilton.! !
+	PuebloRiverwood verComoPrometedor: self hamilton.! !
 
 !PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'JMB 9/25/2021 12:52:12'!
 olvidarInteraccionesYOpiniones
@@ -361,8 +390,8 @@ olvidarInteraccionesYOpiniones
 ! !
 
 
-!classDefinition: #Riverwood category: 'Ejercicio1-PNJ-Episodio2'!
-DenotativeObject subclass: #Riverwood
+!classDefinition: #PuebloRiverwood category: 'Ejercicio1-PNJ-Episodio2'!
+DenotativeObject subclass: #PuebloRiverwood
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -370,35 +399,47 @@ DenotativeObject subclass: #Riverwood
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Riverwood class' category: 'Ejercicio1-PNJ-Episodio2'!
-Riverwood class
+!classDefinition: 'PuebloRiverwood class' category: 'Ejercicio1-PNJ-Episodio2'!
+PuebloRiverwood class
 	instanceVariableNames: 'calificacionesDeLosPersonajes'!
 
-!Riverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 9/29/2021 15:27:01'!
+!PuebloRiverwood class methodsFor: 'interacciones' stamp: 'MGD 10/1/2021 09:16:16'!
+PuebloTodosOlvidanInteraccionesCon: aPerson
+	CarolinaCuranderaDeRiverwood olvidarInteraccionesCon: aPerson. 
+	TreborElGuardiaDeSkyrim olvidarInteraccionesCon: aPerson.! !
+
+
+!PuebloRiverwood class methodsFor: 'calificaciones' stamp: 'MGD 10/1/2021 09:58:20'!
+esDesconocido: aPerson
+	^ (PuebloRiverwood obtenerCalificacionDe: aPerson) = 'Desconocido'.! !
+
+!PuebloRiverwood class methodsFor: 'calificaciones' stamp: 'MGD 10/1/2021 09:58:20'!
 esPrometedor: aPerson
-	^ (Riverwood obtenerReputacion: aPerson) = 'Prometedor'.! !
+	^ (PuebloRiverwood obtenerCalificacionDe: aPerson) = 'Prometedor'.! !
 
-!Riverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 9/29/2021 17:41:06'!
-initializeCollaboratorsFromFile
-	"Auto generated method for loading purposes - Do not modify it"
-
-	calificacionesDeLosPersonajes := ((Dictionary new) add: (#hamilton->'Prometedor'); yourself).! !
-
-!Riverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 9/29/2021 15:33:22'!
-obtenerReputacion: aPerson
-	^calificacionesDeLosPersonajes at: aPerson ifAbsent: ['Desconocido'].! !
-
-!Riverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 9/29/2021 15:18:18'!
-olvideTodasCalificaciones
+!PuebloRiverwood class methodsFor: 'calificaciones' stamp: 'MGD 10/1/2021 09:58:37'!
+olvidarTodasCalificaciones
 	calificacionesDeLosPersonajes := Dictionary new.! !
 
-!Riverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 9/29/2021 15:29:09'!
+!PuebloRiverwood class methodsFor: 'calificaciones' stamp: 'MGD 9/29/2021 15:29:09'!
 verComoDesconocido: aPerson
 	calificacionesDeLosPersonajes at: aPerson put: 'Desconocido'.! !
 
-!Riverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 9/29/2021 15:29:06'!
+!PuebloRiverwood class methodsFor: 'calificaciones' stamp: 'MGD 9/29/2021 15:29:06'!
 verComoPrometedor: aPerson
 	calificacionesDeLosPersonajes at: aPerson put: 'Prometedor'.! !
+
+
+!PuebloRiverwood class methodsFor: 'calificaciones - privado' stamp: 'MGD 10/1/2021 09:58:20'!
+obtenerCalificacionDe: aPerson
+	^calificacionesDeLosPersonajes at: aPerson ifAbsent: ['Desconocido'].! !
+
+
+!PuebloRiverwood class methodsFor: 'as yet unclassified' stamp: 'MGD 10/1/2021 10:33:42'!
+initializeCollaboratorsFromFile
+	"Auto generated method for loading purposes - Do not modify it"
+
+	calificacionesDeLosPersonajes := ((Dictionary new)).! !
 
 
 !classDefinition: #TreborElGuardiaDeSkyrim category: 'Ejercicio1-PNJ-Episodio2'!
@@ -414,19 +455,23 @@ DenotativeObject subclass: #TreborElGuardiaDeSkyrim
 TreborElGuardiaDeSkyrim class
 	instanceVariableNames: 'frasesDesconocidos frasesPrometedores cantidadDeInteraccionesConPersonajes'!
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'MGD 9/29/2021 15:31:27'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'MGD 10/1/2021 09:49:51'!
 interactuarCon: aPerson
 	self recordarInteraccionCon: aPerson.
-	^ self responderSegunCalificacionDe: aPerson ! !
+	^ self respuestaSegunCalificacionDe: aPerson.! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'MGD 9/29/2021 15:35:51'!
-olvidar
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'MGD 10/1/2021 09:05:34'!
+olvidarInteraccionesCon: aPerson
+	cantidadDeInteraccionesConPersonajes at: aPerson put: 0.! !
+
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'MGD 10/1/2021 09:17:50'!
+olvidarTodasLasInteracciones
 	cantidadDeInteraccionesConPersonajes := Dictionary new.! !
 
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 14:53:35'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 09:51:54'!
 obtenerInteraccionesCon: aPerson
-	^ cantidadDeInteraccionesConPersonajes at: aPerson ifAbsent: [0]
+	^ cantidadDeInteraccionesConPersonajes at: aPerson ifAbsent: [0].
 	! !
 
 !TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 14:54:32'!
@@ -436,27 +481,27 @@ recordarInteraccionCon: aPerson
 	cantidadDeInteraccionesConPersonajes at: aPerson put: (cantidadAnteriorDeIteracciones + 1).
 	! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 15:43:48'!
-responderSegunCalificacionDe: aPerson
-	^(Riverwood esPrometedor: aPerson) ifTrue: [self responderSegunCantidadDeInteraccionesConPrometedor: aPerson] ifFalse: [self responderSegunCantidadDeInteraccionesConDesconocido: aPerson].! !
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:09:09'!
+respuestaSegunCalificacionDe: aPerson
+	^(PuebloRiverwood esPrometedor: aPerson) ifTrue: [self respuestaSegunCantidadDeInteraccionesConPrometedor: aPerson] ifFalse: [self respuestaSegunCantidadDeInteraccionesConDesconocido: aPerson].! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 15:44:09'!
-responderSegunCantidadDeInteraccionesConDesconocido: aPerson
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:08:51'!
+respuestaSegunCantidadDeInteraccionesConDesconocido: aPerson
 	^ frasesDesconocidos at: ((self obtenerInteraccionesCon: aPerson ) min: frasesDesconocidos size).! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 9/29/2021 15:44:31'!
-responderSegunCantidadDeInteraccionesConPrometedor: aPerson
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'MGD 10/1/2021 10:09:09'!
+respuestaSegunCantidadDeInteraccionesConPrometedor: aPerson
 	^ frasesPrometedores at: ((self obtenerInteraccionesCon: aPerson ) min: frasesPrometedores size).! !
 
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'MGD 9/29/2021 17:41:06'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'MGD 10/1/2021 10:33:42'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	frasesDesconocidos := #('Hola forastero' '¿Todo bien?' '¿Algún problema?' ).
 	frasesPrometedores := #('Bienvenido aventurero!!' 'Espero que tengas una buena estadia en Riverwood' ).
-	cantidadDeInteraccionesConPersonajes := ((Dictionary new) add: (#hamilton->6); yourself).! !
+	cantidadDeInteraccionesConPersonajes := ((Dictionary new) add: (#hamilton->1); yourself).! !
 
 CarolinaCuranderaDeRiverwood initializeAfterFileIn!
-Riverwood initializeAfterFileIn!
+PuebloRiverwood initializeAfterFileIn!
 TreborElGuardiaDeSkyrim initializeAfterFileIn!
